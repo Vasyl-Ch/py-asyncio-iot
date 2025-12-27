@@ -25,35 +25,29 @@ async def main() -> None:
     hue_light_id, speaker_id, toilet_id = device_ids
 
     # create a few programs
-    wake_up_parallel = [
+    await service.run_parallel([
         Message(hue_light_id, MessageType.SWITCH_ON),
         Message(speaker_id, MessageType.SWITCH_ON),
-    ]
+    ])
 
-    wake_up_sequence = [
+    await service.run_sequence([
         Message(
             speaker_id,
             MessageType.PLAY_SONG,
             "Rick Astley - Never Gonna Give You Up"
-        ),
-    ]
+        )
+    ])
 
-    sleep_parallel = [
+    await service.run_parallel([
         Message(hue_light_id, MessageType.SWITCH_OFF),
         Message(speaker_id, MessageType.SWITCH_OFF),
-    ]
+    ])
 
-    sleep_sequence = [
+    await service.run_sequence([
         Message(toilet_id, MessageType.FLUSH),
         Message(toilet_id, MessageType.CLEAN),
-    ]
+    ])
 
-    # run the programs
-    await service.run_parallel(wake_up_parallel)
-    await service.run_sequence(wake_up_sequence)
-
-    await service.run_parallel(sleep_parallel)
-    await service.run_sequence(sleep_sequence)
 
 if __name__ == "__main__":
     start = time.perf_counter()
