@@ -24,7 +24,6 @@ async def main() -> None:
 
     hue_light_id, speaker_id, toilet_id = device_ids
 
-    # create a few programs
     await service.run_parallel([
         Message(hue_light_id, MessageType.SWITCH_ON),
         Message(speaker_id, MessageType.SWITCH_ON),
@@ -38,15 +37,16 @@ async def main() -> None:
         )
     ])
 
-    await service.run_parallel([
-        Message(hue_light_id, MessageType.SWITCH_OFF),
-        Message(speaker_id, MessageType.SWITCH_OFF),
-    ])
-
-    await service.run_sequence([
-        Message(toilet_id, MessageType.FLUSH),
-        Message(toilet_id, MessageType.CLEAN),
-    ])
+    await asyncio.gather(
+        service.run_parallel([
+            Message(hue_light_id, MessageType.SWITCH_OFF),
+            Message(speaker_id, MessageType.SWITCH_OFF),
+        ]),
+        service.run_sequence([
+            Message(toilet_id, MessageType.FLUSH),
+            Message(toilet_id, MessageType.CLEAN),
+        ])
+    )
 
 
 if __name__ == "__main__":
